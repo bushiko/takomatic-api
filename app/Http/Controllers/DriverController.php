@@ -13,13 +13,10 @@ use Illuminate\Http\Response;
 use App\User;
 use Validator;
 
+use Vinkla\Pusher\Facades\Pusher;
+
 class DriverController extends Controller
 {
-
-    public function __construct()
-    {
-        $this->middleware('cors');
-    }
 
     /**
      * Display a listing of the resource.
@@ -61,6 +58,11 @@ class DriverController extends Controller
             $driver->role = 'DRIVER';
 
             $driver->save();
+
+            // TODO: como valido si se guardo?
+
+            Pusher::trigger('tako-channel', 'new-driver', ['driver' => $driver]);
+
             return response()->json($driver);
         }
         catch(\Exception $e) 

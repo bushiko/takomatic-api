@@ -16,5 +16,8 @@ Route::get('/', function () {
 });
 
 
-Route::resource('driver', 'DriverController');
-Route::resource('client', 'ClientController');
+Route::group(['middleware' => 'cors'], function() {
+	Route::resource('driver', 'DriverController');
+	Route::resource('client', 'ClientController');
+});
+
