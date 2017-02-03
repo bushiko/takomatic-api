@@ -7,13 +7,10 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use Illuminate\Support\Facades\Input;
-use Illuminate\Http\Response;
-
 use App\User;
 use Validator;
 
-class DriverController extends Controller
+class ClientController extends Controller
 {
 
     public function __construct()
@@ -28,7 +25,7 @@ class DriverController extends Controller
      */
     public function index()
     {
-        $drivers = User::where('role', 'DRIVER')->get();
+        $drivers = User::where('role', 'CLIENT')->get();
 
         return response()->json($drivers);
     }
@@ -41,32 +38,7 @@ class DriverController extends Controller
      */
     public function store(Request $request)
     {
-        try
-        {
-            $rules = array(
-                'name' => 'required'
-            );
-
-            $validator = Validator::make(Input::all(), $rules);
-
-            if($validator->fails()) 
-            {
-                return response()->json($validator->messages(), 
-                    Response::HTTP_UNPROCESSABLE_ENTITY
-                );
-            }
-
-            $driver = new User;
-            $driver->name = Input::get('name');
-            $driver->role = 'DRIVER';
-
-            $driver->save();
-            return response()->json($driver);
-        }
-        catch(\Exception $e) 
-        {
-            return response()->json(['type' => 'error', 'message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
-        }
+        //
     }
 
     /**
@@ -77,14 +49,7 @@ class DriverController extends Controller
      */
     public function show($id)
     {
-        $driver = User::where('role', 'DRIVER')->find($id);
-
-        if(is_null($driver))
-        {
-            return response('Driver Not Found', Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json($driver);
+        //
     }
 
     /**
