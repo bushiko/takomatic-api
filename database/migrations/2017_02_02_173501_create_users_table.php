@@ -18,8 +18,8 @@ class CreateUsersTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('role');
-            $table->decimal('latitude', 10, 8);
-            $table->decimal('longitude', 10, 8);
+            $table->decimal('latitude', 10, 6);
+            $table->decimal('longitude', 10, 6);
             $table->timestamps();
         });
     }

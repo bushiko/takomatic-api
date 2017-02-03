@@ -14,6 +14,7 @@ use App\User;
 use Validator;
 
 use Vinkla\Pusher\Facades\Pusher;
+use App\Jobs\UpdateRoute;
 
 class DriverController extends Controller
 {
@@ -62,6 +63,10 @@ class DriverController extends Controller
             // TODO: como valido si se guardo?
 
             Pusher::trigger('tako-channel', 'new-driver', ['driver' => $driver]);
+
+            // Job
+            $job = (new UpdateRoute($driver->id));
+            dispatch($job);
 
             return response()->json($driver);
         }
