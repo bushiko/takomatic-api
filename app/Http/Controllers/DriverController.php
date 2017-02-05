@@ -15,9 +15,21 @@ use Validator;
 
 use Vinkla\Pusher\Facades\Pusher;
 use App\Jobs\UpdateRoute;
+use App\Jobs\GenerateRoute;
+
+use App\Bounds;
+
+use App\Route;
+use App\RouteStep;
 
 class DriverController extends Controller
 {
+    private $Bounds;
+
+
+    public function __construct() {
+        $this->Bounds = new Bounds();
+    }
 
     /**
      * Display a listing of the resource.
@@ -58,21 +70,28 @@ class DriverController extends Controller
             $driver->name = Input::get('name');
             $driver->role = 'DRIVER';
 
+            // random initial coords
+            $driver->lat = $this->Bounds->getRandomLat();
+            $driver->lng = $this->Bounds->getRandomLng();
+
             $driver->save();
 
             // TODO: como valido si se guardo?
 
             Pusher::trigger('tako-channel', 'new-driver', ['driver' => $driver]);
 
-            // Job
-            $job = (new UpdateRoute($driver->id));
+            $job = (new GenerateRoute($driver->id));
             dispatch($job);
+
 
             return response()->json($driver);
         }
         catch(\Exception $e) 
         {
-            return response()->json(['type' => 'error', 'message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json(
+                ['type' => 'error', 'message' => $e->getMessage()], 
+                Response::HTTP_BAD_REQUEST
+            );
         }
     }
 

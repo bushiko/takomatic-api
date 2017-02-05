@@ -11,6 +11,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use App\User;
 use Vinkla\Pusher\Facades\Pusher;
 
+use App\Jobs\UpdateRoute;
+
 class UpdateRoute extends Job implements SelfHandling, ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
@@ -34,9 +36,26 @@ class UpdateRoute extends Job implements SelfHandling, ShouldQueue
     public function handle()
     {
         $user = User::find($this->userId);
-        $user->latitude = 1;
-        $user->longitude = 2;
 
+        $step = $user->route->steps->sortBy('step_number')->first();
+
+        if(!$step)
+        {
+            $user->route->delete();
+            // aqui deberemos reasignar ruta al usuario
+
+            $job = (new GenerateRoute($user->id));
+            dispatch($job);
+
+            return;
+        }
+
+        // Agendamos siguiente actualizacion
+        $job = (new UpdateRoute($user->id))->delay($step->duration);
+        dispatch($job);
+
+        $user->lat = $step->lat;
+        $user->lng = $step->lng;
         $user->save();
 
         $event_name = $user->role === 'DRIVER'
@@ -44,5 +63,8 @@ class UpdateRoute extends Job implements SelfHandling, ShouldQueue
             : 'client-location-changed';
 
         Pusher::trigger('tako-channel', $event_name, [strtolower($user->role) => $user]);
+
+
+        $step->delete();
     }
 }
