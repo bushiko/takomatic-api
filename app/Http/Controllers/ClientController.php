@@ -133,6 +133,26 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $client = User::where('role', 'CLIENT')->find($id);
+
+        if(is_null($client))
+        {
+            return response('Client Not Found', Response::HTTP_NOT_FOUND);
+        }
+
+        if($client->route)
+        {
+            $client->route->steps()->delete();
+            $client->route()->delete();
+        }
+
+        $client->delete();
+
+
+
+        return response()->json(
+            ['type' => 'success', 'message' => 'Client deleted'], 
+            Response::HTTP_OK
+        );
     }
 }

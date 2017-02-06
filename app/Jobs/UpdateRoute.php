@@ -37,6 +37,12 @@ class UpdateRoute extends Job implements SelfHandling, ShouldQueue
     {
         $user = User::find($this->userId);
 
+        // El usuario pudo haber sido eliminado en el inter
+        if(!$user)
+        {
+            return;
+        }
+
         $step = $user->route->steps->sortBy('step_number')->first();
 
         if(!$step)

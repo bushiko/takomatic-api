@@ -15,6 +15,12 @@ class Cors
      */
     public function handle($request, Closure $next)
     {
+        if ($request->isMethod('options')) {
+            return response('', 200)
+                ->header('Access-Control-Allow-Origin', '*')
+                ->header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
+        }
+
         // TODO: en dev está ok esto, en prod debería ponerse
         // únicamente origins permitidos
         return $next($request)
