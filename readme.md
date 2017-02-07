@@ -11,6 +11,12 @@ Esta api maneja y simula la interacción entre clientes y conductores. La simula
 
 ## Puesta en marcha
 
+Crear una base en MySQL con el nombre 'takomatic'
+
+```sh
+mysql> create database takomatic;
+```
+
 Instalar dependencias
 ```sh
 $ cd takomatic-api
@@ -29,6 +35,13 @@ $ php artisan queue:work --daemon
 ## Configuración
 En el archivo .env se encuentra la configuración de la base de datos así como la llave de Mapbox.
 
+Los límites del mapa están puestos entre las coordenadas de: El Castillo de Chapultepec y La Alberca Olímpica. Estas configuraciones se pueden cambiar en la tabla settings en las entradas con los siguientes key: 
+```sh
+SOUTH_WEST_BOUND_LAT
+SOUTH_WEST_BOUND_LNG
+NORTH_EAST_BOUND_LAT
+NORTH_EAST_BOUND_LNG
+```
 ## Notas
 
 Ya que la simulación solo mueve un conductor/cliente entre un vértice y el siguiente, ésta se encunetra alterada para que el movimiento se vea más fluido (no le tome el tiempo que en realidad debería). Así que se toma el tiempo que le debería tomar según Mapbox y se divide entre 100.
