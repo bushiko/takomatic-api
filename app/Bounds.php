@@ -2,20 +2,24 @@
 
 namespace App;
 
+use \App\Setting;
+
 class Bounds
 {
 	protected $sw_bounds;
 	protected $ne_bounds;
 
 	public function __construct() {
+		$settings = Setting::all();
+
 		$this->sw_bounds = array(
-			'lat' => 19.3575374,
-			'lng' => -99.1908466
+			'lat' => Setting::where('key', 'SOUTH_WEST_BOUND_LAT')->first()->value,
+			'lng' => Setting::where('key', 'SOUTH_WEST_BOUND_LNG')->first()->value
 		);
 
 		$this->ne_bounds = array(
-			'lat' => 19.4140716,
-			'lng' => -99.1535356
+			'lat' => Setting::where('key', 'NORTH_EAST_BOUND_LAT')->first()->value,
+			'lng' => Setting::where('key', 'NORTH_EAST_BOUND_LNG')->first()->value
 		);
 	}
 

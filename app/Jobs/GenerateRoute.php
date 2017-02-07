@@ -13,6 +13,7 @@ use App\Route;
 use App\RouteStep;
 use App\Bounds;
 use App\Geo;
+use App\Setting;
 
 use App\Jobs\GenerateRoute;
 
@@ -48,6 +49,12 @@ class GenerateRoute extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
+
+        if(Setting::where('key', 'SIMULATION_STATUS')->first()->value == 0)
+        {
+            return;
+        }
+
         $user = User::find($this->userId);
 
         if(!$user)
@@ -87,13 +94,10 @@ class GenerateRoute extends Job implements SelfHandling, ShouldQueue
                 $duration = ($_step->duration / sizeof($_step->intersections)) / 100;
 
                 foreach ($_step->intersections as $_intersection) {
-                    // brincamos el primer step ya que es la posicion original del cliente
-                    if($step_number++ == 0) {continue; }
-
                     $step = new RouteStep();
                     $step->lat = $_intersection->location[1];
                     $step->lng = $_intersection->location[0];
-                    $step->step_number = $step_number;
+                    $step->step_number = $step_number++;
                     $step->duration = $duration;
 
                     array_push($steps, $step);

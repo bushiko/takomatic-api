@@ -9,6 +9,7 @@ use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 use App\User;
+use App\Setting;
 use Vinkla\Pusher\Facades\Pusher;
 
 use App\Jobs\UpdateRoute;
@@ -35,6 +36,11 @@ class UpdateRoute extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
+        if(Setting::where('key', 'SIMULATION_STATUS')->first()->value == 0)
+        {
+            return;
+        }
+
         $user = User::find($this->userId);
 
         // El usuario pudo haber sido eliminado en el inter

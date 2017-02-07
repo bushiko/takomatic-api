@@ -18,5 +18,7 @@ Route::get('/', function () {
 Route::resource('driver', 'DriverController');
 Route::resource('client', 'ClientController');
 
-Route::get('/bounds', 'SimulationController@showBounds');
+Route::get('/settings', 'SimulationController@showSettings');
+Route::get('/simulation/start', 'SimulationController@startSimulation');
+Route::get('/simulation/stop', 'SimulationController@stopSimulation');
 
