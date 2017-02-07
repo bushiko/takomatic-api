@@ -1,27 +1,47 @@
-## Laravel PHP Framework
+# Takomatic-api
+> tako = 蛸 = pulpo
 
-[![Build Status](https://travis-ci.org/laravel/framework.svg)](https://travis-ci.org/laravel/framework)
-[![Total Downloads](https://poser.pugx.org/laravel/framework/d/total.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Stable Version](https://poser.pugx.org/laravel/framework/v/stable.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Unstable Version](https://poser.pugx.org/laravel/framework/v/unstable.svg)](https://packagist.org/packages/laravel/framework)
-[![License](https://poser.pugx.org/laravel/framework/license.svg)](https://packagist.org/packages/laravel/framework)
+Esta api maneja y simula la interacción entre clientes y conductores. La simulación se hace a través de jobs y los eventos son transmitidos utilizando Pusher
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as authentication, routing, sessions, queueing, and caching.
+## Dependencias
 
-Laravel is accessible, yet powerful, providing powerful tools needed for large, robust applications. A superb inversion of control container, expressive migration system, and tightly integrated unit testing support give you the tools you need to build any application with which you are tasked.
+  - php >= 5.6
+  - MySQL
+  - [Composer](https://getcomposer.org/doc/00-intro.md)
 
-## Official Documentation
+## Puesta en marcha
 
-Documentation for the framework can be found on the [Laravel website](http://laravel.com/docs).
+Instalar dependencias
+```sh
+$ cd takomatic-api
+$ composer install
+```
+Dar de alta las tablas necesarias y correr el servidor web, por default correrá en el puerto 8000
+```sh
+$ php artisan migrate --seed
+$ php artisan:serve
+```
+Correr el sistema de colas, esto es necesario para la simulación de movimiento
+```sh
+$ php artisan queue:work --daemon
+```
 
-## Contributing
+## Configuración
+En el archivo .env se encuentra la configuración de la base de datos así como la llave de Mapbox.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](http://laravel.com/docs/contributions).
+## Notas
 
-## Security Vulnerabilities
+Ya que la simulación solo mueve un conductor/cliente entre un vértice y el siguiente, ésta se encunetra alterada para que el movimiento se vea más fluido (no le tome el tiempo que en realidad debería). Así que se toma el tiempo que le debería tomar según Mapbox y se divide entre 100.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+Econtré una diferencia en el comportamiento de los jobs programados entre Windows 10 y Mac, desconozco el comportamiento en linux.
 
-### License
+En el archivo app/jobs/GenerateRoute.php, línea 94:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+```sh
+$duration = ($_step->duration / sizeof($_step->intersections)) / 100;
+```
+
+Cambiar para Mac el divisor a 10:
+```sh
+$duration = ($_step->duration / sizeof($_step->intersections)) / 10;
+```
