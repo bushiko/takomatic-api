@@ -125,7 +125,7 @@ class DriverController extends Controller
         //
     }
 
-    /**
+/**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
@@ -133,6 +133,26 @@ class DriverController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $driver = User::where('role', 'DRIVER')->find($id);
+
+        if(is_null($driver))
+        {
+            return response('Driver Not Found', Response::HTTP_NOT_FOUND);
+        }
+
+        if($driver->route)
+        {
+            $driver->route->steps()->delete();
+            $driver->route()->delete();
+        }
+
+        Pusher::trigger('tako-channel', 'deleted-driver', ['driverId' => $driver->id]);
+        $driver->delete();
+
+
+        return response()->json(
+            ['type' => 'success', 'message' => 'Driver deleted'], 
+            Response::HTTP_OK
+        );
     }
 }

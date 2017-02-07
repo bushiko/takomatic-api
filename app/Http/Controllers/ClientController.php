@@ -146,9 +146,8 @@ class ClientController extends Controller
             $client->route()->delete();
         }
 
+        Pusher::trigger('tako-channel', 'deleted-client', ['clientId' => $client->id]);
         $client->delete();
-
-
 
         return response()->json(
             ['type' => 'success', 'message' => 'Client deleted'], 
